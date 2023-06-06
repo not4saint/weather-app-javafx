@@ -44,8 +44,12 @@ public class Controller {
         assert getData != null : "fx:id=\"getData\" was not injected: check your FXML file 'Untitled'.";
         getData.setOnAction(event -> {
             String userCity = city.getText().trim();
+            if (userCity.equals("The request to openweathermap was not completed successfully")) {
+                city.setText(userCity);
+                return;
+            }
             if (!userCity.isBlank()) {
-                String output = getUrlContent(String.format("https://api.openweathermap.org/data/2.5/weather?q=%s,uk&APPID=%s", userCity, "78534afcafcfd0caf669bb44eb1d8c14"));
+                String output = getUrlContent(String.format("https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=%s", userCity, "78534afcafcfd0caf669bb44eb1d8c14"));
 
                 if (!output.isBlank()) {
                     JSONObject obj = new JSONObject(output);
@@ -54,7 +58,11 @@ public class Controller {
                     maxTemp.setText("МАКСИМУМ: " + Math.ceil(obj.getJSONObject("main").getDouble("temp_max") - 273.15) + "°C");
                     minTemp.setText("МИНИМУМ: " + Math.floor(obj.getJSONObject("main").getDouble("temp_min") - 273.15) + "°C");
                     pressure.setText("ДАВЛЕНИЕ: " + (obj.getJSONObject("main").getDouble("pressure") * 0.75) + " мм рт.ст.");
+                } else {
+                    city.clear();
                 }
+            } else {
+                city.clear();
             }
         });
     }
@@ -73,7 +81,9 @@ public class Controller {
             }
             bufferedReader.close();
         } catch (Exception e) {
-            System.out.println("City's name is incorrected");
+            System.out.println("Response question exception in " + e.getLocalizedMessage());
+            content.delete(0, content.length());
+            content.append("The request to openweathermap was not completed successfully");
         }
         return content.toString();
     }
