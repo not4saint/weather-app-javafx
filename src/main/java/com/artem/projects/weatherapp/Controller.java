@@ -9,9 +9,23 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+import org.json.JSONObject;
 
 public class Controller {
 
+    @FXML
+    public Text info;
+    @FXML
+    public Text temp;
+    @FXML
+    public Text tempReal;
+    @FXML
+    public Text minTemp;
+    @FXML
+    public Text maxTemp;
+    @FXML
+    public Text pressure;
     @FXML
     private ResourceBundle resources;
 
@@ -28,9 +42,21 @@ public class Controller {
     void initialize() {
         assert city != null : "fx:id=\"city\" was not injected: check your FXML file 'Untitled'.";
         assert getData != null : "fx:id=\"getData\" was not injected: check your FXML file 'Untitled'.";
-        getData.setOnAction(event ->
-                String output = getUrlContent("https://history.openweathermap.org/data/2.5/aggregated/year?lat=35&lon=139&appid={API key}")
-                System.out.println("All works"));
+        getData.setOnAction(event -> {
+            String userCity = city.getText().trim();
+            if (!userCity.isBlank()) {
+                String output = getUrlContent(String.format("https://api.openweathermap.org/data/2.5/weather?q=%s,uk&APPID=%s", userCity, "78534afcafcfd0caf669bb44eb1d8c14"));
+
+                if (!output.isBlank()) {
+                    JSONObject obj = new JSONObject(output);
+                    temp.setText("ТЕМПЕРАТУРА: " + Math.ceil(obj.getJSONObject("main").getDouble("temp") - 273.15) + "°C");
+                    tempReal.setText("ОЩУЩАЕТСЯ: " + Math.floor(obj.getJSONObject("main").getDouble("feels_like") - 273.15) + "°C");
+                    maxTemp.setText("МАКСИМУМ: " + Math.ceil(obj.getJSONObject("main").getDouble("temp_max") - 273.15) + "°C");
+                    minTemp.setText("МИНИМУМ: " + Math.floor(obj.getJSONObject("main").getDouble("temp_min") - 273.15) + "°C");
+                    pressure.setText("ДАВЛЕНИЕ: " + (obj.getJSONObject("main").getDouble("pressure") * 0.75) + " мм рт.ст.");
+                }
+            }
+        });
     }
 
     private static String getUrlContent(String urlAddress) {

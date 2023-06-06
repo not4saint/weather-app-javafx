@@ -9,6 +9,7 @@ module com.artem.projects.weatherapp {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
+    requires org.json;
 
     opens com.artem.projects.weatherapp to javafx.fxml;
     exports com.artem.projects.weatherapp;
