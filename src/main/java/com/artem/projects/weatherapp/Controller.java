@@ -50,27 +50,17 @@ public class Controller {
             }
 
             String inputCity = getUrlContent(String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s&limit=1&appid=%s", userCity, "78534afcafcfd0caf669bb44eb1d8c14")).replace('[', ' ').replace(']', ' ');
-            System.out.println(inputCity);
             JSONObject cityInfoObj = new JSONObject(inputCity);
             double lat = cityInfoObj.getDouble("lat");
             double lon = cityInfoObj.getDouble("lon");
-            System.out.println(lon + " " + lat);
 
-            if (!userCity.isBlank()) {
-                String output = getUrlContent(String.format("https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s", lat, lon, "78534afcafcfd0caf669bb44eb1d8c14"));
-                if (!output.isBlank()) {
-                    JSONObject tempInfoObj = new JSONObject(output);
-                    temp.setText("ТЕМПЕРАТУРА: " + Math.ceil(tempInfoObj.getJSONObject("main").getDouble("temp") - 273.15) + "°C");
-                    tempReal.setText("ОЩУЩАЕТСЯ: " + Math.floor(tempInfoObj.getJSONObject("main").getDouble("feels_like") - 273.15) + "°C");
-                    maxTemp.setText("МАКСИМУМ: " + Math.ceil(tempInfoObj.getJSONObject("main").getDouble("temp_max") - 273.15) + "°C");
-                    minTemp.setText("МИНИМУМ: " + Math.floor(tempInfoObj.getJSONObject("main").getDouble("temp_min") - 273.15) + "°C");
-                    pressure.setText("ДАВЛЕНИЕ: " + (tempInfoObj.getJSONObject("main").getDouble("pressure") * 0.75) + " мм рт.ст.");
-                } else {
-                    city.clear();
-                }
-            } else {
-                city.clear();
-            }
+            String output = getUrlContent(String.format("https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s", lat, lon, "78534afcafcfd0caf669bb44eb1d8c14"));
+            JSONObject tempInfoObj = new JSONObject(output);
+            temp.setText("ТЕМПЕРАТУРА: " + Math.ceil(tempInfoObj.getJSONObject("main").getDouble("temp") - 273.15) + "°C");
+            tempReal.setText("ОЩУЩАЕТСЯ: " + Math.floor(tempInfoObj.getJSONObject("main").getDouble("feels_like") - 273.15) + "°C");
+            maxTemp.setText("МАКСИМУМ: " + Math.ceil(tempInfoObj.getJSONObject("main").getDouble("temp_max") - 273.15) + "°C");
+            minTemp.setText("МИНИМУМ: " + Math.floor(tempInfoObj.getJSONObject("main").getDouble("temp_min") - 273.15) + "°C");
+            pressure.setText("ДАВЛЕНИЕ: " + (tempInfoObj.getJSONObject("main").getDouble("pressure") * 0.75) + " мм рт.ст.");
         });
     }
 
